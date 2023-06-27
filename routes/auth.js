@@ -13,7 +13,7 @@ router.post(
       .trim()
       .isEmail()
       .withMessage("Please enter a valid email.")
-      .custom((value, { req }) => {
+      .custom((value) => {
         return User.findOne({ email: value }).then((user) => {
           if (user) {
             return Promise.reject("Email address already exists!");
@@ -37,5 +37,21 @@ router.post(
   ],
   authController.login
 );
+
+router.post("/forgot-password", authController.forgotPassword);
+
+router.post("/reset-password", authController.resetPassword);
+
+router.post(
+  "/change-password",
+  [
+    body("oldPassword").trim().isLength({ min: 5 }),
+    body("newPassword").trim().isLength({ min: 5 }),
+    body("confirmPassword").trim().isLength({ min: 5 }),
+  ],
+  authController.changePassword
+);
+
+router.post("/login-admin", authController.loginAdmin);
 
 module.exports = router;

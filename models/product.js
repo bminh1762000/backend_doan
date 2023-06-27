@@ -23,6 +23,13 @@ const productSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
 });
 
 productSchema.methods.updateProduct = function (updateProduct) {

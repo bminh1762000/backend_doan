@@ -35,11 +35,11 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
-exports.deleteProducts = async (req, res, next) => {
-  const productIds = req.body.productIds;
+exports.deleteProduct = async (req, res, next) => {
+  const productId = req.params.productId;
   try {
-    const products = await Product.deleteMany({ _id: { $in: productIds } });
-    if (!products) {
+    const product = await Product.findByIdAndDelete(productId);
+    if (!product) {
       const error = new Error("Product could not find.");
       error.status = 404;
       throw error;
@@ -54,7 +54,8 @@ exports.deleteProducts = async (req, res, next) => {
 };
 
 exports.createProduct = async (req, res, next) => {
-  const { title, imageUrl, price, category, ship } = req.body;
+  const { title, imageUrl, price, category, ship, quantity, description } =
+    req.body;
   try {
     const product = new Product({
       title: title,
@@ -62,6 +63,8 @@ exports.createProduct = async (req, res, next) => {
       price: price,
       category: category,
       ship: ship,
+      quantity: quantity,
+      description: description,
     });
     const result = await product.save();
     res.status(201).json({ message: "Product created", product: result });
@@ -74,32 +77,10 @@ exports.createProduct = async (req, res, next) => {
   }
 };
 
-exports.createProducts = async (req, res, next) => {
-  try {
-    INITIAL_DATA.forEach(async ({ title, imageUrl, price, category, ship }) => {
-      const newProduct = new Product({
-        title: title,
-        imageUrl: imageUrl,
-        price: price,
-        category: category,
-        ship: ship,
-      });
-      await newProduct.save();
-    });
-    res
-      .status(200)
-      .json({ message: "Fetch successfully", product: INITIAL_DATA });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 exports.updateProduct = async (req, res, next) => {
   const productId = req.params.productId;
-  const { title, imageUrl, price, category, ship } = req.body;
+  const { title, imageUrl, price, category, ship, quantity, description } =
+    req.body;
   try {
     const product = await Product.findById(productId);
     if (!product) {
@@ -112,6 +93,8 @@ exports.updateProduct = async (req, res, next) => {
     product.price = price;
     product.category = category;
     product.ship = ship;
+    product.quantity = quantity;
+    product.description = description;
     const result = await product.save();
     res.status(200).json({ message: "Successfully", product: result });
   } catch (err) {
@@ -121,6 +104,29 @@ exports.updateProduct = async (req, res, next) => {
     next(err);
   }
 };
+
+// exports.createProducts = async (req, res, next) => {
+//   try {
+//     INITIAL_DATA.forEach(async ({ title, imageUrl, price, category, ship }) => {
+//       const newProduct = new Product({
+//         title: title,
+//         imageUrl: imageUrl,
+//         price: price,
+//         category: category,
+//         ship: ship,
+//       });
+//       await newProduct.save();
+//     });
+//     res
+//       .status(200)
+//       .json({ message: "Fetch successfully", product: INITIAL_DATA });
+//   } catch (err) {
+//     if (!err.statusCode) {
+//       err.statusCode = 500;
+//     }
+//     next(err);
+//   }
+// };
 
 // export const INITIAL_DATA = [
 //   {

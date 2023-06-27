@@ -6,13 +6,17 @@ const router = express.Router();
 
 router.post(
   "/",
-  isAuth,
-  isAdmin,
-  uploadPhoto.array("images", 10),
+  // isAuth,
+  // isAdmin,
+  uploadPhoto.array("images", 1),
   imgResize,
   uploadImages
 );
 
-router.delete("/delete-img/:id", isAuth, isAdmin, deleteImages);
+router.delete(
+  "/delete-img/:id",
+  // isAuth, isAdmin,
+  deleteImages
+);
 
 module.exports = router;

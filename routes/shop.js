@@ -13,4 +13,6 @@ router.post("/collection/delete", isAuth, shopController.clearItemFromCart);
 
 router.post("/collection/remove", isAuth, shopController.removeFromCart);
 
+router.post("/collection/clear", isAuth, shopController.clearCart);
+
 module.exports = router;

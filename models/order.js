@@ -2,48 +2,50 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const orderSchema = new Schema({
-  products: [
-    {
-      product: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: "Product",
+const orderSchema = new Schema(
+  {
+    products: [
+      {
+        product: {
+          type: Object,
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
       },
-      quantity: {
-        type: Number,
-        required: true,
-      },
+    ],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
-  ],
-  user: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
-  info: {
     address: {
       type: String,
       required: true,
     },
-    city: {
+    phone: {
+      type: Number,
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
     },
-    state: {
+    email: {
       type: String,
       required: true,
     },
-    zip: {
+    status: {
       type: String,
-      required: true,
+      default: "Pending",
     },
   },
-  status: {
-    type: String,
-    default: "Pending",
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 orderSchema.methods.deleteOrder = function () {
   return this.deleteOne();
@@ -51,14 +53,6 @@ orderSchema.methods.deleteOrder = function () {
 
 orderSchema.methods.updateStatus = function (newStatus) {
   this.status = newStatus;
-  return this.save();
-};
-
-orderSchema.methods.createOrder = function (createOrder) {
-  this.products = createOrder.products;
-  this.user = createOrder.user;
-  this.status = createOrder.status;
-  this.info = createOrder.info;
   return this.save();
 };
 

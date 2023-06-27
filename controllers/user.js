@@ -17,9 +17,9 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
-exports.updateUser = async (req, res, next) => {
+exports.updateStatusUser = async (req, res, next) => {
   const userId = req.params.userId;
-  const { name } = req.body;
+  const { isLocked } = req.body;
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -27,7 +27,7 @@ exports.updateUser = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
-    user.name = name;
+    user.isLocked = isLocked;
     const result = await user.save();
     res.status(200).json({ message: "User updated", user: result });
   } catch (err) {
@@ -49,6 +49,48 @@ exports.deleteUser = async (req, res, next) => {
     }
     await User.findByIdAndRemove(userId);
     res.status(200).json({ message: "User deleted" });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getUserInfo = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error("User could not find.");
+      error.status = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: "User info",
+      user: { name: user.name, email: user.email },
+    });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updateUserInfo = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error("User could not find.");
+      error.status = 404;
+      throw error;
+    }
+    user.name = name;
+    await user.save();
+    res.status(200).json({ message: "User updated", isSuccess: true });
   } catch (err) {
     if (!err.status) {
       err.status = 500;

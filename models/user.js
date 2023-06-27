@@ -32,6 +32,11 @@ const userSchema = new Schema({
       },
     ],
   },
+  isLocked: {
+    type: Boolean,
+    default: false,
+  },
+  resetPasswordOtp: String,
 });
 
 userSchema.methods.addToCart = function (addProduct) {
@@ -100,6 +105,11 @@ userSchema.methods.clearFromCart = function (addProduct) {
     items: updatedItems,
   };
   this.cart = updatedCart;
+  return this.save();
+};
+
+userSchema.methods.clearCart = function () {
+  this.cart = { items: [] };
   return this.save();
 };
 

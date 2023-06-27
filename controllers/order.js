@@ -2,7 +2,7 @@ const Order = require("../models/order");
 
 exports.getOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find({ user: req.userId });
     if (!orders) {
       const error = new Error("Could not find orders");
       error.status = 404;
@@ -18,10 +18,16 @@ exports.getOrders = async (req, res, next) => {
 };
 
 exports.postOrder = async (req, res, next) => {
-  const { products } = req.body;
+  const { products, address, name, phone, email } = req.body;
+  const userId = req.userId;
   try {
     const order = new Order({
       products: products,
+      user: userId,
+      address,
+      name,
+      phone,
+      email,
     });
     const result = await order.save();
     res.status(201).json({ message: "Order created", order: result });
@@ -83,6 +89,23 @@ exports.updateStatusOrder = async (req, res, next) => {
     order.status = status;
     const result = await order.save();
     res.status(200).json({ message: "Order updated", order: result });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getAllOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find();
+    if (!orders) {
+      const error = new Error("Could not find orders");
+      error.status = 404;
+      throw error;
+    }
+    res.status(200).json({ message: "Fetched", orders: orders });
   } catch (err) {
     if (!err.status) {
       err.status = 500;
